@@ -289,7 +289,7 @@ $totalPages = ceil($totalResults / $perPage);
                                                         <?= $user['is_blocked'] ? 'Unblock' : 'Block' ?>
                                                     </button>
                                                 </form>
-                                                <a href="admin_user_details.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-info">
+                                                <a href="view_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-info">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
                                             </td>

@@ -20,23 +20,21 @@ $ordersResult = $stmtOrders->get_result();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>My Orders - Ilo's Kit</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
             --primary-color: #6c63ff;
             --secondary-color: #f8f9fa;
             --accent-color: #ff6b6b;
         }
-        
         body {
             background-color: #f5f7fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
         .order-card {
             border: none;
             border-radius: 10px;
@@ -45,48 +43,44 @@ $ordersResult = $stmtOrders->get_result();
             margin-bottom: 25px;
             overflow: hidden;
         }
-        
         .order-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        
         .order-header {
             background-color: var(--primary-color);
             color: white;
             padding: 15px 20px;
             border-bottom: none;
         }
-        
         .status-badge {
             padding: 5px 10px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
         }
-        
-        .status-processing {
+        .status-pending {
             background-color: #fff3cd;
             color: #856404;
         }
-        
+        .status-processing {
+            background-color: #bee5eb;
+            color: #0c5460;
+        }
         .status-completed {
             background-color: #d4edda;
             color: #155724;
         }
-        
         .status-cancelled {
             background-color: #f8d7da;
             color: #721c24;
         }
-        
         .product-img {
             width: 60px;
             height: 60px;
             object-fit: cover;
             border-radius: 8px;
         }
-        
         .back-btn {
             background-color: var(--primary-color);
             color: white;
@@ -95,12 +89,10 @@ $ordersResult = $stmtOrders->get_result();
             border-radius: 30px;
             transition: all 0.3s ease;
         }
-        
         .back-btn:hover {
             background-color: #5a52d6;
             transform: translateX(-5px);
         }
-        
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -108,16 +100,27 @@ $ordersResult = $stmtOrders->get_result();
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
-        
         .empty-state i {
             font-size: 5rem;
             color: #d1d5db;
             margin-bottom: 20px;
         }
+
+    .status-note {
+        font-size: 0.9rem;
+        color:rgb(0, 0, 0); /* bright red/orange */
+        font-weight: 600;
+        margin-top: 8px;
+        background-color:rgb(228, 228, 228); /* light red background */
+        padding: 8px 12px;
+        border-radius: 6px;
+        max-width: fit-content;
+    }
+</style>
+
     </style>
 </head>
 <body class="p-4">
-
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="fas fa-receipt me-2"></i> My Orders</h2>
@@ -142,12 +145,17 @@ $ordersResult = $stmtOrders->get_result();
                     <div>
                         <h5 class="mb-0">Order #<?= htmlspecialchars($order['id']) ?></h5>
                         <small class="text-white-50">Placed on <?= date("F j, Y, g:i a", strtotime($order['order_date'])) ?></small>
+                        <?php if (strtolower($order['status']) === 'pending'): ?>
+                            <div class="status-note">
+                                Status will change to <strong>Processing</strong> once payment is confirmed.
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <span class="status-badge status-<?= strtolower(htmlspecialchars($order['status'])) ?>">
                         <?= ucfirst(htmlspecialchars($order['status'])) ?>
                     </span>
                 </div>
-                
+
                 <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-md-4">
@@ -159,7 +167,7 @@ $ordersResult = $stmtOrders->get_result();
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-4">
                             <div class="d-flex align-items-center mb-2">
                                 <i class="fas fa-truck me-2 text-muted"></i>
@@ -169,7 +177,7 @@ $ordersResult = $stmtOrders->get_result();
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-4">
                             <div class="d-flex align-items-center mb-2">
                                 <i class="fas fa-map-marker-alt me-2 text-muted"></i>
@@ -180,18 +188,18 @@ $ordersResult = $stmtOrders->get_result();
                             </div>
                         </div>
                     </div>
-                    
+
                     <h5 class="mb-3"><i class="fas fa-boxes me-2"></i> Order Items</h5>
-                    
+
                     <?php
-                    // Fetch items for this order
+                    // Fetch items for this order (bind as string since order ID is varchar)
                     $stmtItems = $conn->prepare("
                         SELECT oi.*, p.name, p.image_url 
                         FROM order_items oi
                         JOIN products p ON oi.product_id = p.id
                         WHERE oi.order_id = ?
                     ");
-                    $stmtItems->bind_param("i", $order['id']);
+                    $stmtItems->bind_param("s", $order['id']); // changed "i" to "s"
                     $stmtItems->execute();
                     $itemsResult = $stmtItems->get_result();
                     ?>
@@ -212,7 +220,6 @@ $ordersResult = $stmtOrders->get_result();
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-
                                                 <div>
                                                     <h6 class="mb-0"><?= htmlspecialchars($item['name']) ?></h6>
                                                     <small class="text-muted">Status: <?= ucfirst(htmlspecialchars($item['status'])) ?></small>
