@@ -105,19 +105,16 @@ $ordersResult = $stmtOrders->get_result();
             color: #d1d5db;
             margin-bottom: 20px;
         }
-
-    .status-note {
-        font-size: 0.9rem;
-        color:rgb(0, 0, 0); /* bright red/orange */
-        font-weight: 600;
-        margin-top: 8px;
-        background-color:rgb(228, 228, 228); /* light red background */
-        padding: 8px 12px;
-        border-radius: 6px;
-        max-width: fit-content;
-    }
-</style>
-
+        .status-note {
+            font-size: 0.9rem;
+            color: rgb(0, 0, 0); /* bright black */
+            font-weight: 600;
+            margin-top: 8px;
+            background-color: rgb(228, 228, 228); /* light gray */
+            padding: 8px 12px;
+            border-radius: 6px;
+            max-width: fit-content;
+        }
     </style>
 </head>
 <body class="p-4">
@@ -220,6 +217,8 @@ $ordersResult = $stmtOrders->get_result();
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
+                                              <img src="kit_images/<?= htmlspecialchars($item['image_url']) ?>" alt="Product Image" class="product-img" />
+
                                                 <div>
                                                     <h6 class="mb-0"><?= htmlspecialchars($item['name']) ?></h6>
                                                     <small class="text-muted">Status: <?= ucfirst(htmlspecialchars($item['status'])) ?></small>

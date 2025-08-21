@@ -10,10 +10,10 @@ if (!isset($_SESSION['user_id'])) {
 
 // Fetch user info
 $user_id = $_SESSION['user_id'];
-$stmt = $conn->prepare("SELECT name, email, created_at FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT name, email, phone, created_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($name, $email, $created_at);
+$stmt->bind_result($name, $email, $phone, $created_at);
 $stmt->fetch();
 $stmt->close();
 ?>
@@ -46,6 +46,7 @@ $stmt->close();
     <div class="card-body">
       <p><strong>Name:</strong> <?= htmlspecialchars($name) ?></p>
       <p><strong>Email:</strong> <?= htmlspecialchars($email) ?></p>
+      <p><strong>Phone:</strong> <?= htmlspecialchars($phone ??'N/A') ?></p>
       <p><strong>Member Since:</strong> <?= htmlspecialchars($created_at) ?></p>
     </div>
   </div>

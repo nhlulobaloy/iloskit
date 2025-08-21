@@ -2,257 +2,211 @@
 session_start();
 include "db_connection.php";
 
-// Initialize variables
-$errors = [];
-$cart = $_SESSION['cart'] ?? [];
-$products = [];
-$subtotal = 0;
-
-// Redirect if not logged in or cart is empty
+// Redirect if not logged in or cart empty
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php?message=Please+login+to+checkout");
     exit;
 }
 
+$cart = $_SESSION['cart'] ?? [];
 if (empty($cart)) {
     header("Location: cart.php?message=Your+cart+is+empty");
     exit;
 }
 
-// Fetch product prices
-$productIds = array_unique(array_map(fn($item) => $item['product_id'], $cart));
+// Fetch products
+$productIds = array_unique(array_map(fn($i)=>$i['product_id'],$cart));
 $idsString = implode(',', array_map('intval', $productIds));
-$query = "SELECT id, price FROM products WHERE id IN ($idsString)";
-$result = $conn->query($query);
-
-while ($row = $result->fetch_assoc()) {
-    $products[$row['id']] = $row['price'];
-}
+$result = $conn->query("SELECT id, name, price, image_url FROM products WHERE id IN ($idsString)");
+$products = [];
+while ($row = $result->fetch_assoc()) $products[$row['id']] = $row;
 
 // Calculate subtotal
+$subtotal = 0;
 foreach ($cart as $item) {
     $pid = $item['product_id'];
-    $subtotal += ($products[$pid] ?? 0) * $item['quantity'];
+    $subtotal += ($products[$pid]['price'] ?? 0) * $item['quantity'];
 }
 
-// Apply promo discount if exists
+// Apply promo
 $discount = 0;
-$promoCodeUsed = null;
-
 if (isset($_SESSION['applied_promo'])) {
     $promo = $_SESSION['applied_promo'];
-    $promoCodeUsed = $promo['code'];
-
-    if ($promo['discount_type'] === 'percentage') {
-        $discount = $subtotal * ($promo['discount_value'] / 100);
-    } else {
-        $discount = $promo['discount_value'];
-    }
+    $discount = $promo['discount_type']=='percentage' ? $subtotal*($promo['discount_value']/100) : $promo['discount_value'];
 }
-
 $subtotalAfterDiscount = $subtotal - $discount;
 
-// Define delivery fees per province
-$paxiLocations = [
-    'Gauteng' => 60,
-    'KwaZulu-Natal' => 60,
-    'Western Cape' => 60,
-    'Eastern Cape' => 50,
-    'Free State' => 60,
-    'Limpopo' => 60,
-    'Mpumalanga' => 60,
-    'Northern Cape' => 60,
-    'North West' => 60
-];
+// Delivery options
+$deliveryOptions = ['paxi'=>'Paxi','postnet'=>'PostNet','courier_guy'=>'Courier Guy'];
+$paxiFees = ['Gauteng'=>60,'KwaZulu-Natal'=>60,'Western Cape'=>60,'Eastern Cape'=>50,'Free State'=>60,'Limpopo'=>60,'Mpumalanga'=>60,'Northern Cape'=>60,'North West'=>60];
+$defaultLocation='Gauteng';
+$defaultDelivery='paxi';
 
-$defaultLocation = 'Gauteng';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userId = $_SESSION['user_id'];
-    $selectedLocation = $_POST['paxi_location'] ?? $defaultLocation;
-    $deliveryAddress = trim($_POST['delivery_address'] ?? '');
-
-    if (!array_key_exists($selectedLocation, $paxiLocations)) {
-        $errors[] = "Please select a valid province for Paxi location.";
-    }
-
-    if (empty($deliveryAddress)) {
-        $errors[] = "Please enter your delivery address.";
-    }
-
-    if (empty($errors)) {
-        $normalizedAddress = strtolower($deliveryAddress);
-        $courierFee = (strpos($normalizedAddress, 'grahamstown') !== false || strpos($normalizedAddress, 'makhanda') !== false)
-            ? 0
-            : $paxiLocations[$selectedLocation];
-
-        $total = $subtotalAfterDiscount + $courierFee;
-        $orderId = 'ILO-' . time() . '-' . rand(1000, 9999);
-        $orderDate = date('Y-m-d H:i:s');
-        $paymentMethod = 'Bank Transfer';
-        $paymentReference = $orderId;
-        $orderStatus = 'pending';
-        $deliveryOption = 'paxi';
-
-        // Insert order
-        $stmt = $conn->prepare("INSERT INTO orders (
-            id, user_id, order_date, status, total_amount,
-            province, delivery_fee, delivery_option,
-            delivery_address, payment_method,
-            payment_reference
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-        $stmt->bind_param(
-            "sissdsdssss",
-            $orderId, $userId, $orderDate, $orderStatus, $total,
-            $selectedLocation, $courierFee, $deliveryOption,
-            $deliveryAddress, $paymentMethod, $paymentReference
-        );
-        $stmt->execute();
-        $stmt->close();
-
-        // Insert order items
-        $itemStmt = $conn->prepare("INSERT INTO order_items (
-            order_id, product_id, quantity, price_at_purchase, status, size
-        ) VALUES (?, ?, ?, ?, ?, ?)");
-
-        foreach ($cart as $item) {
-            $productId = $item['product_id'];
-            $quantity = $item['quantity'];
-            $price = $products[$productId] ?? 0;
-            $status = 'pending';
-            $size = $item['size'] ?? 'M';
-
-            $itemStmt->bind_param("siidss", $orderId, $productId, $quantity, $price, $status, $size);
-            $itemStmt->execute();
-        }
-
-        $itemStmt->close();
-
-        // Decrease uses_remaining for promo
-        if ($promoCodeUsed) {
-            $updatePromo = $conn->prepare("UPDATE promo_codes SET uses_remaining = uses_remaining - 1 WHERE code = ? AND uses_remaining > 0");
-            $updatePromo->bind_param("s", $promoCodeUsed);
-            $updatePromo->execute();
-            $updatePromo->close();
-        }
-
-        $_SESSION['pending_order'] = [
-            'user_id' => $userId,
-            'order_id' => $orderId,
-            'total_amount' => $total,
-            'province' => $selectedLocation,
-            'delivery_address' => $deliveryAddress,
-            'payment_method' => $paymentMethod
-        ];
-
-        unset($_SESSION['cart'], $_SESSION['applied_promo']);
-        header("Location: bank_transfer_instructions.php?order_id=$orderId");
-        exit;
+// Fetch user email
+$userEmail = '';
+if(isset($_SESSION['user_id'])){
+    $uid = $_SESSION['user_id'];
+    $res = $conn->query("SELECT email FROM users WHERE id = $uid LIMIT 1");
+    if($res && $row = $res->fetch_assoc()){
+        $userEmail = $row['email'];
     }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Checkout - Ilo's Kit</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        .item-img { width: 120px; border-radius: 4px; }
-        .error-card { background-color: #f8d7da; padding: 1rem; border-radius: 5px; color: #842029; margin-bottom: 1rem; }
-        .discount-badge { background-color: #d1e7dd; color: #0f5132; padding: 0.2em 0.5em; border-radius: 4px; font-weight: 600; margin-left: 0.5em; }
-        .summary-card { background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 2rem; }
-        .checkout-header { font-weight: 700; }
-        #freeNotice { color: green; font-weight: 600; display: none; }
-    </style>
+<meta charset="UTF-8">
+<title>Checkout - Ilo's Kit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {--primary:#4a6bff;--secondary:#6c757d;--success:#28a745;--border-radius:8px;}
+body {background:#f5f7fa;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+.checkout-container {max-width:800px;margin:2rem auto;padding:2rem;background:#fff;border-radius:var(--border-radius);box-shadow:0 2px 15px rgba(0,0,0,0.05);}
+.checkout-header {color:var(--primary);font-weight:700;border-bottom:2px solid #eee;padding-bottom:1rem;margin-bottom:1.5rem;}
+.section-title {color:var(--primary);font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;}
+.form-control,.form-select {padding:0.75rem 1rem;border-radius:var(--border-radius);border:1px solid #ddd;}
+.form-control:focus,.form-select:focus {border-color:var(--primary);box-shadow:0 0 0 0.25rem rgba(74,107,255,0.25);}
+.btn-secondary,.btn-success {padding:0.75rem 1.5rem;border-radius:var(--border-radius);font-weight:500;border:none;}
+.btn-secondary {background:var(--secondary);}
+.btn-success {background:var(--success);}
+.error-card {background:#f8d7da;padding:1rem;border-radius:var(--border-radius);color:#842029;margin-bottom:1.5rem;border-left:4px solid #dc3545;}
+.info-card {background:#e7f1ff;color:#0d6efd;padding:1rem;border-radius:var(--border-radius);margin-bottom:1.5rem;border-left:4px solid var(--primary);}
+.form-label {font-weight:500;margin-bottom:0.5rem;}
+.text-muted {font-size:0.85rem;color:#6c757d !important;}
+.action-buttons {display:flex;justify-content:flex-end;gap:1rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee;}
+#payment_debug {margin-top:1rem;color:red;}
+@media(max-width:768px){.checkout-container{padding:1.5rem;}.action-buttons{flex-direction:column-reverse;}.btn{width:100%;}}
+</style>
 </head>
 <body>
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="checkout-header mb-4"><i class="fas fa-shopping-bag me-2"></i>Checkout</h1>
+<div class="container py-4">
+    <div class="checkout-container">
+        <h1 class="checkout-header"><i class="fas fa-shopping-bag me-2"></i>Complete Your Order</h1>
 
-            <?php if (!empty($errors)): ?>
-                <div class="error-card mb-4">
-                    <h4><i class="fas fa-exclamation-triangle me-2"></i>Please fix these errors:</h4>
-                    <ul>
-                        <?php foreach ($errors as $error): ?>
-                            <li><?= htmlspecialchars($error) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
+        <form id="checkoutForm">
+            <h5 class="section-title"><i class="fas fa-truck"></i> Delivery Information</h5>
 
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Your order will be delivered to your nearest <strong>Paxi</strong> location for easy pickup. 
-                Please select your province and specify your exact address or preferred Paxi location below.
+            <div class="mb-4">
+                <label class="form-label">Select your province:</label>
+                <select id="paxi_location" class="form-select" required>
+                    <option value="">-- Select Province --</option>
+                    <?php foreach($paxiFees as $loc=>$fee): ?>
+                        <option value="<?=$loc?>" <?=($defaultLocation==$loc)?'selected':''?>><?=$loc?> (R<?=number_format($fee,2)?>)</option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
-            <form method="post">
-                <h5 class="mb-3"><i class="fas fa-truck me-2"></i>Delivery Information</h5>
+            <div class="mb-4">
+                <label class="form-label">Select delivery option:</label>
+                <select id="delivery_option" class="form-select" required>
+                    <?php foreach($deliveryOptions as $key=>$label): ?>
+                        <option value="<?=$key?>" <?=($defaultDelivery==$key)?'selected':''?>><?=$label?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-                <div class="mb-4">
-                    <label for="paxi_location" class="form-label">Select your province:</label>
-                    <select id="paxi_location" name="paxi_location" class="form-select form-select-lg" required>
-                        <option value="">-- Select Province --</option>
-                        <?php foreach ($paxiLocations as $location => $fee): ?>
-                            <option value="<?= htmlspecialchars($location) ?>" <?= 
-                                (($_POST['paxi_location'] ?? $defaultLocation) === $location) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($location) ?> (R<?= number_format($fee, 2) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <div class="mb-4">
+                <label class="form-label">Delivery Address:</label>
+                <textarea id="delivery_address" class="form-control" rows="4" required placeholder="Street address or nearest pickup"></textarea>
+                <small class="text-muted">Specify street or pickup location.</small>
+            </div>
 
-                <div class="mb-4">
-                    <label for="delivery_address" class="form-label">Delivery Address:</label>
-                    <textarea id="delivery_address" name="delivery_address" class="form-control" rows="3" required 
-                        placeholder="e.g.Pretoria 345 Jane Doe OR specify your nearest Paxi location."><?= htmlspecialchars($_POST['delivery_address'] ?? '') ?></textarea>
-                    <small class="text-muted">You can specify your street address or the nearest Paxi location.</small>
-                </div>
+            <div class="mb-4">
+                <p><strong>Subtotal:</strong> R<span id="subtotal"><?=number_format($subtotalAfterDiscount,2)?></span></p>
+                <p><strong>Delivery Fee:</strong> R<span id="delivery_fee">0.00</span></p>
+                <p><strong>Total:</strong> R<span id="total_amount">0.00</span></p>
+            </div>
 
-                <div class="d-flex justify-content-end gap-3 mt-4">
-                    <a href="cart.php" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Cart</a>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-lock me-2"></i>Proceed to Payment</button>
-                </div>
-            </form>
-        </div>
+            <div id="payment_debug"></div>
+
+            <div class="action-buttons">
+                <a href="cart.php" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Cart</a>
+                <button type="button" id="pay-button" class="btn btn-success"><i class="fas fa-lock me-2"></i>Pay with Card</button>
+            </div>
+        </form>
     </div>
 </div>
 
-
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script>
-    const paxiFees = <?= json_encode($paxiLocations) ?>;
-    const subtotal = <?= $subtotalAfterDiscount ?>;
+const paxiFees = <?=json_encode($paxiFees)?>;
+const subtotal = <?=json_encode($subtotalAfterDiscount)?>;
+const customerEmail = '<?= $userEmail ?>';
 
-    function updateTotal() {
-        const location = document.getElementById('paxi_location').value;
-        const address = document.getElementById('delivery_address').value.toLowerCase();
-        const freeNotice = document.getElementById('freeNotice');
+function calculateDeliveryFee(){
+    const option = document.getElementById('delivery_option').value;
+    const province = document.getElementById('paxi_location').value;
+    const address = document.getElementById('delivery_address').value.toLowerCase();
+    let fee=0;
+    if(option==='paxi'){
+        fee=(address.includes('grahamstown')||address.includes('makhanda'))?0:(paxiFees[province]??60);
+    } else fee=90;
+    return fee;
+}
 
-        let courierFee = 0;
-        if (!address.includes('grahamstown') && !address.includes('makhanda')) {
-            courierFee = paxiFees[location] || 0;
-            freeNotice.style.display = 'none';
-        } else {
-            courierFee = 0;
-            freeNotice.style.display = 'block';
+function updateTotals(){
+    const deliveryFee = calculateDeliveryFee();
+    const total = subtotal + deliveryFee;
+    document.getElementById('delivery_fee').textContent = deliveryFee.toFixed(2);
+    document.getElementById('total_amount').textContent = total.toFixed(2);
+}
+document.getElementById('delivery_option').addEventListener('change', updateTotals);
+document.getElementById('paxi_location').addEventListener('change', updateTotals);
+document.getElementById('delivery_address').addEventListener('input', updateTotals);
+window.addEventListener('load', updateTotals);
+
+// Yoco payment
+const yoco = new window.YocoSDK({ publicKey: "pk_test_cdf957c9Kb4LOrJb0274" });
+
+document.getElementById('pay-button').addEventListener('click', function(){
+    const total = parseFloat(document.getElementById('total_amount').textContent);
+    if(total < 0.5){ alert("Total must be at least R0.50"); return; }
+    const amountInCents = Math.round(total*100);
+    console.log("Amount in cents:", amountInCents);
+
+    yoco.showPopup({
+        amountInCents: amountInCents,
+        currency: 'ZAR',
+        name: "Ilo's Kit",
+        description: "Order Payment",
+        callback: function(result){
+            console.log("Yoco result:", result);
+
+            if(result.error){
+                alert("Payment failed: "+result.error.message);
+                document.getElementById('payment_debug').textContent = "Payment failed: "+result.error.message;
+            } else if(result.id){
+                const formData = new URLSearchParams();
+                formData.append('token', result.id);
+                formData.append('delivery_address', document.getElementById('delivery_address').value);
+                formData.append('province', document.getElementById('paxi_location').value);
+                formData.append('delivery_option', document.getElementById('delivery_option').value);
+                formData.append('customerEmail', customerEmail);
+
+                console.log("Sending to process_payment.php:", formData.toString());
+
+                fetch('process_payment.php',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                    body: formData.toString()
+                })
+                .then(res=>res.text())
+                .then(text=>{
+                    console.log("Raw server response:", text);
+                    let data;
+                    try { data = JSON.parse(text); } 
+                    catch(e){ alert("Invalid JSON response"); console.error(text); return; }
+                    document.getElementById('payment_debug').textContent = JSON.stringify(data,null,2);
+                    if(data.success) { alert("Payment successful"); location.href='success.php'; }
+                    else alert("Payment failed on server: "+(data.error||"Unknown"));
+                })
+                .catch(err=>{ console.error("Fetch error:", err); alert("Network/server error"); });
+            } else { alert("Payment failed: no token"); }
         }
-
-        document.getElementById('courier_fee').textContent = courierFee.toFixed(2);
-        document.getElementById('total_amount').textContent = (subtotal + courierFee).toFixed(2);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('paxi_location').addEventListener('change', updateTotal);
-        document.getElementById('delivery_address').addEventListener('input', updateTotal);
-        updateTotal(); // Call initially
     });
+});
 </script>
 </body>
 </html>

@@ -131,19 +131,19 @@ $searchTerm = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']
 
           <?php if (isset($_SESSION['user_id'])): ?>
             <?php if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-              <li class="nav-item"><a class="nav-link" href="admin_dashboard.php"><i class="fas fa-tachometer-alt me-1"></i>
+              <li class="nav-item"><a class="nav-link" href="admin_dashboard"><i class="fas fa-tachometer-alt me-1"></i>
                   Dashboard</a></li>
-              <li class="nav-item"><a class="nav-link" href="upload_image.php"><i class="fas fa-upload me-1"></i> Upload</a>
+              <li class="nav-item"><a class="nav-link" href="upload_image"><i class="fas fa-upload me-1"></i> Upload</a>
               </li>
             <?php else: ?>
-              <li class="nav-item"><a class="nav-link" href="user_dashboard.php"><i class="fas fa-user-circle me-1"></i>
+              <li class="nav-item"><a class="nav-link" href="user_dashboard"><i class="fas fa-user-circle me-1"></i>
                   Profile</a></li>
-              <li class="nav-item"><a class="nav-link" href="cart.php"><i class="fas fa-shopping-cart me-1"></i> Cart</a>
+              <li class="nav-item"><a class="nav-link" href="cart"><i class="fas fa-shopping-cart me-1"></i> Cart</a>
               </li>
-              <li class="nav-item"><a class="nav-link" href="my_orders.php"><i class="fas fa-clipboard-list me-1"></i>
+              <li class="nav-item"><a class="nav-link" href="my_orders"><i class="fas fa-clipboard-list me-1"></i>
                   Orders</a></li>
             <?php endif; ?>
-            <li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+            <li class="nav-item"><a class="nav-link" href="logout"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
             </li>
           <?php else: ?>
             <li class="nav-item"><a class="nav-link" href="#login"><i class="fas fa-sign-in-alt me-1"></i> Login</a></li>
@@ -297,13 +297,13 @@ $searchTerm = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']
       <p class="mb-4">Professional Web Developer & Designer</p>
 
       <div class="d-flex flex-wrap justify-content-center">
-        <a href="mailto:nhlulobaloy22@gmail.com" class="contact-badge">
-          <i class="fas fa-envelope me-2"></i>nhlulobaloy22@gmail.com
+        <a href="mailto:n.baloye@outlook.com" class="contact-badge">
+          <i class="fas fa-envelope me-2"></i>n.baloye@outlook.com
         </a>
         <a href="tel:+27717974493" class="contact-badge">
           <i class="fas fa-phone me-2"></i>071 797 4493
         </a>
-        <a href="https://wa.me/27717974493" class="contact-badge">
+        <a href="https://wa.me/27717964493" class="contact-badge">
           <i class="fab fa-whatsapp me-2"></i>WhatsApp
         </a>
       </div>

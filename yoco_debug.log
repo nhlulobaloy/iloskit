@@ -1,0 +1,356 @@
+
+2025-08-19 09:48:23 => 
+2025-08-19 09:48:48 => 
+2025-08-19 09:49:24 => 
+2025-08-19 09:54:36 => 
+2025-08-19 09:59:25 => 
+[2025-08-19 13:35:59] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-19 13:35:59] Request Data: {"token":"tok_j1XGZFKkpomzokFp4lS9lPSpM5","amountInCents":66000,"currency":"ZAR"}
+[2025-08-19 13:35:59] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-19 13:36:00] cURL Verbose Output:
+*   Trying 104.18.22.235:443...
+* Connected to api.yoco.com (104.18.22.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 81]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 81
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Tue, 19 Aug 2025 13:36:15 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971a09eb79d625c1-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=Zf109lSaor60n0exXEt.MfuNZ4B7jg6YxBy2AivK5SQ-1755610575365-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-19 13:36:00] HTTP Code: 401
+[2025-08-19 13:36:00] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-19 13:36:00] cURL Error: 
+----------------------------------------
+[2025-08-19 13:40:26] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-19 13:40:26] Request Data: {"token":"tok_v4WmMh5jGJ2mjzhDLrcqNNSLPX","amountInCents":66000,"currency":"ZAR"}
+[2025-08-19 13:40:26] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-19 13:40:27] cURL Verbose Output:
+*   Trying 104.18.22.235:443...
+* Connected to api.yoco.com (104.18.22.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 81]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 81
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Tue, 19 Aug 2025 13:40:42 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971a107088348c8b-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=ZzEES9zvu9mCrX_0lo.mBZ5oxKm86FkzRoyExDJtKhE-1755610842416-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-19 13:40:27] HTTP Code: 401
+[2025-08-19 13:40:27] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-19 13:40:27] cURL Error: 
+----------------------------------------
+[2025-08-19 13:55:08] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-19 13:55:08] Request Data: {"token":"tok_mAJGZTj75Z5J56cyLbsEG7fO1","amountInCents":66000,"currency":"ZAR"}
+[2025-08-19 13:55:08] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-19 13:55:09] cURL Verbose Output:
+*   Trying 104.18.22.235:443...
+* Connected to api.yoco.com (104.18.22.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 80]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 80
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Tue, 19 Aug 2025 13:55:24 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971a25f79d1ffff4-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=.WOjaKAsZmA34Rbo..xnca2EFhkrqD8ldHrsb3O9bq8-1755611724209-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-19 13:55:09] HTTP Code: 401
+[2025-08-19 13:55:09] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-19 13:55:09] cURL Error: 
+----------------------------------------
+[2025-08-19 14:02:15] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-19 14:02:15] Request Data: {"token":"tok_Az5Qvseojo16KytEWcW6ohO1","amountInCents":66000,"currency":"ZAR"}
+[2025-08-19 14:02:15] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-19 14:02:16] cURL Verbose Output:
+*   Trying 104.18.23.235:443...
+* Connected to api.yoco.com (104.18.23.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 79]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 79
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Tue, 19 Aug 2025 14:02:32 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971a3069090673e4-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=9SBwo5ovdytDxyiRjBqjIeaK5PLKq85js3d.4u9knjg-1755612152009-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-19 14:02:16] HTTP Code: 401
+[2025-08-19 14:02:16] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-19 14:02:16] cURL Error: 
+----------------------------------------
+[2025-08-19 14:14:58] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-19 14:14:58] Request Data: {"token":"tok_qYNG5foDJDweE0F5ZdTA6PCl5Q","amountInCents":66000,"currency":"ZAR"}
+[2025-08-19 14:14:58] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-19 14:14:58] cURL Verbose Output:
+*   Trying 104.18.23.235:443...
+* Connected to api.yoco.com (104.18.23.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 81]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 81
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Tue, 19 Aug 2025 14:15:14 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971a43044d9e3517-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=xHICshEU1WGD8kx4cB2H_kBLBKGU2wHWr140nk7b4DY-1755612914103-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-19 14:14:58] HTTP Code: 401
+[2025-08-19 14:14:58] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-19 14:14:58] cURL Error: 
+----------------------------------------
+[2025-08-19 14:26:48] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-19 14:26:48] Request Data: {"token":"tok_qYNG5foDJDjGYNt8rKt2qluoy1","amountInCents":66000,"currency":"ZAR"}
+[2025-08-19 14:26:48] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-19 14:26:51] cURL Verbose Output:
+*   Trying 104.18.22.235:443...
+* Connected to api.yoco.com (104.18.22.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 81]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 81
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Tue, 19 Aug 2025 14:27:06 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971a54690f717415-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=bboRB39gJpDoCrNhb0Q_oR2T.erPEbUYsF_jmKPG1Jw-1755613626544-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-19 14:26:51] HTTP Code: 401
+[2025-08-19 14:26:51] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-19 14:26:51] cURL Error: 
+----------------------------------------
+[2025-08-20 06:36:09] Attempting request to: https://api.yoco.com/v1/charges/
+[2025-08-20 06:36:09] Request Data: {"token":"tok_RKMZ4F0la4P4NdujbvCzKeCW9E","amountInCents":66000,"currency":"ZAR"}
+[2025-08-20 06:36:09] Using Secret Key: sk_test_f92bb5020eZaoJg756a44308d35b
+[2025-08-20 06:36:10] cURL Verbose Output:
+*   Trying 104.18.23.235:443...
+* Connected to api.yoco.com (104.18.23.235) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=yoco.com
+*  start date: Jul 28 20:32:21 2025 GMT
+*  expire date: Oct 26 21:32:19 2025 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.yoco.com/v1/charges/
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.yoco.com]
+* [HTTP/2] [1] [:path: /v1/charges/]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b]
+* [HTTP/2] [1] [content-length: 81]
+> POST /v1/charges/ HTTP/2
+Host: api.yoco.com
+Accept: */*
+Content-Type: application/json
+Authorization: Bearer sk_test_f92bb5020eZaoJg756a44308d35b
+Content-Length: 81
+
+* old SSL session ID is stale, removing
+< HTTP/2 401 
+< date: Wed, 20 Aug 2025 06:36:26 GMT
+< content-type: application/json
+< content-length: 95
+< cf-ray: 971fe054af92f48a-JNB
+< cf-cache-status: DYNAMIC
+< set-cookie: _cfuvid=LUx184u4_LAGWpYwOkBAa6JniBcGmUtRkwSjPD89uRk-1755671786426-0.0.1.1-604800000; path=/; domain=.yoco.com; HttpOnly; Secure; SameSite=None
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host api.yoco.com left intact
+
+[2025-08-20 06:36:10] HTTP Code: 401
+[2025-08-20 06:36:10] Response: {"error":{"code":401,"status":"Unauthorized","message":"The request could not be authorized"}}
+
+[2025-08-20 06:36:10] cURL Error: 
+----------------------------------------

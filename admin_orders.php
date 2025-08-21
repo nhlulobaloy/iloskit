@@ -120,6 +120,15 @@ $result = $stmt->get_result();
         .status-select {
             min-width: 120px;
         }
+        .delivery-option-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -181,6 +190,28 @@ $result = $stmt->get_result();
                 <div class="alert alert-info">No orders found.</div>
             <?php else: ?>
                 <?php while ($order = $result->fetch_assoc()): ?>
+
+                    <?php
+                    // Fetch first product image for this order
+                    $stmtImage = $conn->prepare("
+                        SELECT p.image_url
+                        FROM order_items oi
+                        JOIN products p ON oi.product_id = p.id
+                        WHERE oi.order_id = ?
+                        LIMIT 1
+                    ");
+                    $stmtImage->bind_param("s", $order['id']);
+                    $stmtImage->execute();
+                    $imgResult = $stmtImage->get_result();
+                    $imageUrl = $imgResult->num_rows > 0 ? $imgResult->fetch_assoc()['image_url'] : null;
+                    $stmtImage->close();
+
+                    // fallback image if none found
+                    if (!$imageUrl || trim($imageUrl) === '') {
+                        $imageUrl = 'https://via.placeholder.com/40?text=No+Image';
+                    }
+                    ?>
+
                     <div class="card order-card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div>
@@ -211,6 +242,11 @@ $result = $stmt->get_result();
                                     <p><strong>Total Amount:</strong> R<?= number_format($order['total_amount'], 2) ?></p>
                                     <p><strong>Province:</strong> <?= htmlspecialchars($order['province'] ?? 'N/A') ?></p>
                                     <p><strong>Shipping Address:</strong> <?= nl2br(htmlspecialchars($order['delivery_address'])) ?></p>
+                                    
+                                    <p>
+                                        <img src="kit_images/<?= htmlspecialchars($imageUrl) ?>" alt="Order Product Image" class="delivery-option-img">
+                                        <strong>Delivery Option:</strong> <?= htmlspecialchars($order['delivery_option'] ?? 'N/A') ?>
+                                    </p>
                                 </div>
                             </div>
 
@@ -235,9 +271,6 @@ $result = $stmt->get_result();
                                     </div>
                                 </div>
                             </form>
-
-                            <!-- If you want to keep showing order items, you can add here. 
-                                 I removed the item status update as requested. -->
 
                         </div>
                     </div>
