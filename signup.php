@@ -263,35 +263,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <p><?= $message ?></p>
     </div>
 
-    <style>
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            padding: 20px 30px;
-            border-radius: 16px;
-            background-color: #ff4444;
-            color: white;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-            text-align: center;
-            max-width: 90%;
-            font-family: Poppins, sans-serif;
-            font-size: 16px;
-            font-weight: 500;
-        }
+<style>
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    padding: 20px 30px;
+    border-radius: 16px;
+    background-color: #ff4444;
+    color: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+    text-align: center;
+    max-width: 90%;
+    font-family: Poppins, sans-serif;
+    font-size: 16px; /* default font size */
+    font-weight: 500;
+}
 
-        .popup.success {
-            background: #00C851;
-        }
+.popup.success {
+    background: #00C851;
+}
 
-        .popup.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
+.popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Mobile-specific font increase */
+@media (max-width: 576px) {
+    .popup {
+        font-size: 20px; /* bigger text on small screens */
+        padding: 25px 35px; /* optional: slightly larger padding */
+    }
+}
+</style>
+
     </style>
 
     <script>

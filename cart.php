@@ -13,6 +13,14 @@ foreach (['error','success','promo_error','promo_success'] as $msg) {
     }
 }
 
+// Clear promo if user cleared cart
+if(isset($_GET['clear_cart'])){
+    unset($_SESSION['cart']);
+    unset($_SESSION['applied_promo']);
+    unset($_SESSION['discount']);
+}
+
+// Fetch cart
 $cart = $_SESSION['cart'] ?? [];
 if(empty($cart)){
     echo '<!DOCTYPE html>
@@ -95,8 +103,9 @@ body{background:#f8f9fa;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 <div class="cart-container">
     <div class="cart-header d-flex justify-content-between align-items-center">
         <h2 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Your Shopping Cart</h2>
-        <a href="javascript:history.back()" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Go Back</a>
+        <a href="?clear_cart=1" class="btn btn-outline-danger"><i class="fas fa-trash me-2"></i>Clear Cart & Promo</a>
     </div>
+
     <div class="table-responsive">
         <table class="table">
             <thead class="table-light">
